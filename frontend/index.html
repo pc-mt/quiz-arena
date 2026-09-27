@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QuizArena — Multiplayer Quiz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div class="page">
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">
+        <div class="brand-icon">🎮</div>
+        <span class="brand-name">QUIZARENA</span>
+      </div>
+      <div class="brand-sub">Multiplayer Quiz Plattform</div>
+    </div>
+
+    <div class="sidebar-body">
+
+      <!-- ── LOGIN ── -->
+      <section class="left-section is-active" data-left-section="login">
+        <div class="field">
+          <label>Benutzername</label>
+          <input type="text" id="loginUsername" placeholder="Benutzername eingeben" />
+        </div>
+        <div class="field">
+          <label>Passwort</label>
+          <div class="password-field-wrap">
+            <input type="password" id="loginPassword" placeholder="••••••••" />
+            <button type="button" class="password-toggle" aria-label="Passwort anzeigen" title="Passwort anzeigen/verbergen" data-password-toggle></button>
+          </div>
+        </div>
+        <div class="save-row">
+          <button class="btn btn-primary" id="loginBtn">Anmelden →</button>
+          <button class="btn btn-ghost btn-sm" id="goToRegister">Registrieren</button>
+        </div>
+        <div class="form-message" id="loginMessage"></div>
+      </section>
+
+      <!-- ── REGISTRIERUNG ── -->
+      <section class="left-section" data-left-section="register">
+        <div class="field">
+          <label>Benutzername</label>
+          <input type="text" id="registerUsername" placeholder="Benutzernamen wählen" />
+          <small class="field-hint" id="registerUsernameHint">Der Benutzername muss mindestens 3 Zeichen enthalten.</small>
+        </div>
+        <div class="field">
+          <label>RFID-Karte <span style="color:var(--muted-light);font-weight:400">(optional)</span></label>
+          <input type="text" id="registerRfid" placeholder="04 9C 64 D2 4B 80" />
+        </div>
+        <div class="field">
+          <label>Passwort</label>
+          <div class="password-field-wrap">
+            <input type="password" id="registerPassword" placeholder="••••••••" />
+            <button type="button" class="password-toggle" aria-label="Passwort anzeigen" title="Passwort anzeigen/verbergen" data-password-toggle></button>
+          </div>
+          <small style="display:block;margin-top:4px;font-size:11px;color:var(--muted);">
+            Das Passwort muss zwischen 6 und 256 Zeichen lang sein.
+          </small>
+        </div>
+        <div class="field">
+          <label>Passwort bestätigen</label>
+          <div class="password-field-wrap">
+            <input type="password" id="registerPasswordConfirm" placeholder="••••••••" />
+            <button type="button" class="password-toggle" aria-label="Passwort anzeigen" title="Passwort anzeigen/verbergen" data-password-toggle></button>
+          </div>
+        </div>
+        <div class="save-row">
+          <button class="btn btn-primary" id="registerBtn">Konto erstellen →</button>
+          <button class="btn btn-ghost btn-sm" id="backToLoginFromRegister">← Zurück</button>
+        </div>
+        <div class="form-message" id="registerMessage"></div>
+      </section>
+
+      <!-- ── CONTROLLER-AUSWAHL ── -->
+      <section class="left-section" data-left-section="controller">
+        <p class="section-title">Controller auswählen</p>
+
+        <button class="web-ctrl-btn" id="openWebController">
+          <span>🌐</span>
+          <span>Web-Controller öffnen</span>
+        </button>
+
+        <div id="controllerList"></div>
+        <div class="hint" id="controllerEmpty"></div>
+
+        <div class="divider"><span>Optional</span></div>
+
+        <div class="field">
+          <label>RFID-Karte anpassen</label>
+          <div class="input-with-save">
+            <input type="text" id="updateRfid" placeholder="04 9C 64 D2 4B 80" />
+            <button type="button" class="btn btn-sm btn-ghost" id="saveRfid" title="RFID speichern">Speichern</button>
+            <button type="button" class="btn btn-sm btn-danger" id="deleteRfid" title="RFID löschen" aria-label="RFID löschen">🗑️</button>
+          </div>
+        </div>
+
+        <div class="save-row">
+          <button class="btn btn-primary" id="saveController">Speichern</button>
+          <button class="btn btn-ghost btn-sm" id="backToLogin">→ Login</button>
+        </div>
+        <div class="form-message" id="controllerMessage"></div>
+      </section>
+
+    </div>
+  </aside>
+
+  <!-- ═══ MAIN ═══ -->
+  <main class="main">
+
+    <nav class="topnav">
+      <button class="menu-toggle" id="menuToggle" title="Menü">☰</button>
+      <button class="nav-tab is-active" data-main-tab="lobby">Lobby</button>
+      <button class="nav-tab" data-main-tab="game">Spiel</button>
+      <button class="nav-tab" data-main-tab="evaluation">Auswertung</button>
+      <button class="nav-tab" data-main-tab="controller">Web-Controller</button>
+      <button class="nav-tab" data-main-tab="highscores">Highscores</button>
+      <div class="nav-actions">
+        <button class="icon-btn" id="refreshLobby" title="Aktualisieren">↻</button>
+        <button class="icon-btn" id="closeSession" title="Sitzung beenden">✕</button>
+      </div>
+    </nav>
+
+    <div class="main-body">
+
+      <!-- ── LOBBY ── -->
+      <section class="main-section is-active" data-main-section="lobby">
+        <div class="lobby-grid">
+
+          <div>
+            <div class="card">
+              <div class="card-title">
+                <div class="ct-icon blue">⚙️</div>
+                Spielkonfiguration
+              </div>
+
+              <p class="cat-label">Anzahl der Fragen</p>
+              <div class="pill-group segment-row">
+                <button class="pill is-active" data-round-length="Q5">5 Fragen</button>
+                <button class="pill" data-round-length="Q10">10 Fragen</button>
+                <button class="pill" data-round-length="Q20">20 Fragen</button>
+              </div>
+
+              <p class="cat-label">Kategorien (leicht, mittel, schwer)</p>
+              <div class="cat-grid" id="categoryGrid">
+                <label class="cat-item">
+                  <input type="checkbox" data-category-checkbox data-category-id="1" data-easy="0" data-medium="0" data-hard="0" hidden />
+                  <div class="cat-check"></div>
+                  <div class="cat-info">
+                    <div class="cat-name">Programmierung</div>
+                    <div class="cat-counts">…</div>
+                  </div>
+                </label>
+                <label class="cat-item">
+                  <input type="checkbox" data-category-checkbox data-category-id="2" data-easy="0" data-medium="0" data-hard="0" hidden />
+                  <div class="cat-check"></div>
+                  <div class="cat-info">
+                    <div class="cat-name">Datenbanken</div>
+                    <div class="cat-counts">…</div>
+                  </div>
+                </label>
+                <label class="cat-item">
+                  <input type="checkbox" data-category-checkbox data-category-id="3" data-easy="0" data-medium="0" data-hard="0" hidden />
+                  <div class="cat-check"></div>
+                  <div class="cat-info">
+                    <div class="cat-name">Web-Technologien</div>
+                    <div class="cat-counts">…</div>
+                  </div>
+                </label>
+                <label class="cat-item">
+                  <input type="checkbox" data-category-checkbox data-category-id="4" data-easy="0" data-medium="0" data-hard="0" hidden />
+                  <div class="cat-check"></div>
+                  <div class="cat-info">
+                    <div class="cat-name">Netzwerke</div>
+                    <div class="cat-counts">…</div>
+                  </div>
+                </label>
+                <label class="cat-item">
+                  <input type="checkbox" data-category-checkbox data-category-id="5" data-easy="0" data-medium="0" data-hard="0" hidden />
+                  <div class="cat-check"></div>
+                  <div class="cat-info">
+                    <div class="cat-name">Betriebssysteme</div>
+                    <div class="cat-counts">…</div>
+                  </div>
+                </label>
+                <label class="cat-item">
+                  <input type="checkbox" data-category-checkbox data-category-id="6" data-easy="0" data-medium="0" data-hard="0" hidden />
+                  <div class="cat-check"></div>
+                  <div class="cat-info">
+                    <div class="cat-name">IT-Sicherheit</div>
+                    <div class="cat-counts">…</div>
+                  </div>
+                </label>
+                <label class="cat-item">
+                  <input type="checkbox" data-category-checkbox data-category-id="7" data-easy="0" data-medium="0" data-hard="0" hidden />
+                  <div class="cat-check"></div>
+                  <div class="cat-info">
+                    <div class="cat-name">Algorithmen</div>
+                    <div class="cat-counts">…</div>
+                  </div>
+                </label>
+                <label class="cat-item">
+                  <input type="checkbox" data-category-checkbox data-category-id="8" data-easy="0" data-medium="0" data-hard="0" hidden />
+                  <div class="cat-check"></div>
+                  <div class="cat-info">
+                    <div class="cat-name">Software Engineering</div>
+                    <div class="cat-counts">…</div>
+                  </div>
+                </label>
+                <label class="cat-item">
+                  <input type="checkbox" data-category-checkbox data-category-id="9" data-easy="0" data-medium="0" data-hard="0" hidden />
+                  <div class="cat-check"></div>
+                  <div class="cat-info">
+                    <div class="cat-name">Embedded Systems</div>
+                    <div class="cat-counts">…</div>
+                  </div>
+                </label>
+                <label class="cat-item">
+                  <input type="checkbox" data-category-checkbox data-category-id="10" data-easy="0" data-medium="0" data-hard="0" hidden />
+                  <div class="cat-check"></div>
+                  <div class="cat-info">
+                    <div class="cat-name">Linux &amp; Tools</div>
+                    <div class="cat-counts">…</div>
+                  </div>
+                </label>
+              </div>
+
+              <p class="cat-label">Schwierigkeitsgrad</p>
+              <div class="diff-row">
+                <label class="diff-chip easy is-on">
+                  <input type="checkbox" data-difficulty-checkbox data-difficulty="easy" checked hidden />
+                  <span>✓ Leicht</span>
+                </label>
+                <label class="diff-chip medium is-on">
+                  <input type="checkbox" data-difficulty-checkbox data-difficulty="medium" checked hidden />
+                  <span>✓ Mittel</span>
+                </label>
+                <label class="diff-chip hard">
+                  <input type="checkbox" data-difficulty-checkbox data-difficulty="hard" hidden />
+                  <span>Schwer</span>
+                </label>
+              </div>
+
+              <div class="q-count-display" id="questionSelectionInfo">
+                <span class="q-count-num">0</span> / 5 Fragen verfügbar
+              </div>
+
+              <div class="form-message" id="gameConfigMessage"></div>
+
+              <button class="btn-start" id="gameStartBtn">🚀 Spiel starten</button>
+            </div>
+          </div>
+
+          <!-- Players -->
+          <div class="players-panel">
+            <div class="card">
+              <div class="card-title">
+                <div class="ct-icon sky">👥</div>
+                Aktive Spieler
+              </div>
+
+              <div class="muted tiny" id="sessionInfo"></div>
+              <div id="activePlayersList"></div>
+
+              <button type="button" class="btn btn-add-bot" id="addBotBtn">
+                <span class="bot-icon">🤖</span> Add Bot
+              </button>
+
+              <p style="font-size:11px; color:var(--muted); margin-top:12px;">
+                Alle Spieler müssen bereit sein, um zu starten.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ── SPIEL ── -->
+      <section class="main-section" data-main-section="game">
+        <div class="game-wrap">
+          <div class="countdown-circle-wrap" id="countdownCircleWrap" aria-hidden="true">
+            <div class="countdown-circle">
+              <svg class="countdown-circle-svg" viewBox="0 0 100 100" aria-hidden="true">
+                <circle class="countdown-circle-track" cx="50" cy="50" r="45" fill="none" stroke-width="6" />
+                <circle class="countdown-circle-progress" id="countdownCircleProgress" cx="50" cy="50" r="45" fill="none" stroke-width="6" stroke-dasharray="283" stroke-dashoffset="0" />
+              </svg>
+              <span class="countdown-circle-number" id="countdownCircleNumber">3</span>
+            </div>
+            <button type="button" class="btn btn-abort-countdown" id="abortCountdownBtn" aria-label="Countdown abbrechen" style="display:none;">Abbrechen</button>
+          </div>
+          <div class="question-meta">
+            <div class="q-counter muted">Frage <strong>—</strong></div>
+            <div class="q-progress"><div class="q-progress-bar"></div></div>
+            <div class="timer-display timer">⏱ --</div>
+          </div>
+
+          <div class="question-card">
+            <div class="q-tags tiny"></div>
+            <h2 class="question-text">Warte auf Spielstart</h2>
+          </div>
+
+          <div class="answers-grid" id="answerGrid">
+            <button class="answer-btn answer a">
+              <div class="a-key">A</div>
+              <span>—</span>
+            </button>
+            <button class="answer-btn answer b">
+              <div class="a-key">B</div>
+              <span>—</span>
+            </button>
+            <button class="answer-btn answer c">
+              <div class="a-key">C</div>
+              <span>—</span>
+            </button>
+            <button class="answer-btn answer d">
+              <div class="a-key">D</div>
+              <span>—</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── AUSWERTUNG ── -->
+      <section class="main-section" data-main-section="evaluation">
+        <div style="max-width:600px; margin:0 auto;">
+          <div class="card">
+            <div class="card-title" style="margin-bottom:20px;">
+              <div class="ct-icon blue">📊</div>
+              Auswertung
+            </div>
+            <div class="eval-correct-flag">
+              <div class="ecf-label">✓ Richtige Antwort</div>
+              <div class="ecf-answer">—</div>
+            </div>
+            <div class="result-list"></div>
+            <p class="evaluation-countdown" id="evaluationCountdownEl">
+              Weiter in 3 Sekunden …
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── WEB-CONTROLLER ── -->
+      <section class="main-section" data-main-section="controller">
+        <div class="ctrl-page">
+          <div class="ctrl-card card">
+            <div class="ctrl-avatar-large">?</div>
+            <div class="ctrl-player-name">—</div>
+            <div class="ctrl-id-badge">🎮 ID: —</div>
+
+            <button class="ready-btn" id="readyToggle">✔ Ich bin bereit</button>
+
+            <div class="ctrl-answers-grid" id="controllerAnswers">
+              <button class="ctrl-answer ca">A</button>
+              <button class="ctrl-answer cb">B</button>
+              <button class="ctrl-answer cc">C</button>
+              <button class="ctrl-answer cd">D</button>
+            </div>
+
+            <p class="ctrl-hint">Nach einer Antwort gesperrt bis zur nächsten Frage.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── HIGHSCORES ── -->
+      <section class="main-section" data-main-section="highscores">
+        <div class="hs-header">
+          <div class="card-title">🏆 Highscores</div>
+          <div class="hs-filter-tabs score-tabs">
+            <button class="hs-tab score-tab is-active" data-mode="Q5">5 Fragen</button>
+            <button class="hs-tab score-tab" data-mode="Q10">10 Fragen</button>
+            <button class="hs-tab score-tab" data-mode="Q20">20 Fragen</button>
+          </div>
+        </div>
+
+        <div class="podium" id="highscorePodium"></div>
+
+        <div class="card" style="padding:0 0 8px;">
+          <table class="hs-table">
+            <thead>
+              <tr>
+                <th>Rang</th>
+                <th>Spieler</th>
+                <th>Punkte</th>
+                <th>Datum / Zeit</th>
+              </tr>
+            </thead>
+            <tbody id="highscoreTableBody"></tbody>
+          </table>
+        </div>
+
+        <div style="margin-top:20px; text-align:center;">
+          <button class="btn btn-ghost btn-sm" onclick="location.reload()">← Zurück zur Lobby</button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Modal Edit profile -->
+  <div class="edit-profile-overlay" id="editProfileOverlay" aria-hidden="true">
+    <div class="edit-profile-modal" role="dialog" aria-labelledby="editProfileTitle">
+      <h3 class="edit-profile-title" id="editProfileTitle">Profil bearbeiten</h3>
+      <div class="edit-profile-avatar-section">
+        <div class="edit-profile-avatar-wrap">
+          <div class="edit-profile-avatar-circle" id="editProfileAvatarCircle">
+            <img class="edit-profile-avatar-img" id="editProfileAvatarImg" src="" alt="" />
+            <span class="edit-profile-avatar-initials" id="editProfileAvatarInitials"></span>
+          </div>
+        </div>
+        <div class="edit-profile-name-wrap">
+          <input type="text" id="editProfileDisplayName" class="edit-profile-input" placeholder="Anzeigename" maxlength="80" readonly />
+          <button type="button" class="edit-profile-pencil" id="editProfilePencil" aria-label="Anzeigename bearbeiten" title="Anzeigename bearbeiten">✎</button>
+        </div>
+      </div>
+      <div class="edit-profile-divider"></div>
+      <p class="edit-profile-gallery-label">Profilfoto wählen</p>
+      <div class="edit-profile-gallery" id="editProfileGallery"></div>
+      <div class="edit-profile-actions">
+        <button type="button" class="btn btn-primary" id="editProfileSave">Speichern</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="env.js"></script>
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

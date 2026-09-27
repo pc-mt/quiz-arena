@@ -1,0 +1,7 @@
+# Force LF line endings for shell scripts
+*.sh text eol=lf
+
+# Force LF for configuration files
+*.conf text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf

@@ -1,0 +1,143 @@
+### Variables
+@baseUrl = http://localhost:8080
+@contentType = application/json
+
+### Variables pour les tests (à modifier selon vos besoins)
+@testUsername = lunaa
+@testPassword = securePassword124
+@testControllerId = web-abc123
+@testControllerType = WEB
+
+# ============================================
+# 1) LOBBY - SESSION & STATUS
+# ============================================
+
+### 1.1. Créer ou récupérer la session active
+GET {{baseUrl}}/api/lobby/session
+
+### 1.2. Récupérer le statut du lobby (session + players)
+GET {{baseUrl}}/api/lobby/status
+
+# ============================================
+# 2) LOBBY - JOIN / LEAVE
+# ============================================
+
+### 2.1. Login pour obtenir un token (pour tests Lobby)
+# @name loginForLobby
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "{{testUsername}}",
+  "password": "{{testPassword}}"
+}
+
+### 2.2. Join session (Succès)
+# Note: Remplacer <token> par le token obtenu de la requête 2.1
+POST {{baseUrl}}/api/lobby/join
+Content-Type: {{contentType}}
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2IiwidXNlcm5hbWUiOiJsdW5hYSIsImlhdCI6MTc3MTYxODY4OSwiZXhwIjoxNzcxNzA1MDg5fQ.GZXCYtR34crbKBN40xrnsFBH37UKTSPapklgC3peVnw
+
+{
+  "controller_id": "{{testControllerId}}",
+  "controller_type": "{{testControllerType}}"
+}
+
+### 2.3. Join session - Erreur: controller_id manquant
+POST {{baseUrl}}/api/lobby/join
+Content-Type: {{contentType}}
+Authorization: Bearer <token>
+
+{
+  "controller_type": "WEB"
+}
+
+### 2.4. Join session - Erreur: Non authentifié (pas de token)
+POST {{baseUrl}}/api/lobby/join
+Content-Type: {{contentType}}
+
+{
+  "controller_id": "{{testControllerId}}",
+  "controller_type": "{{testControllerType}}"
+}
+
+### 2.5. Join session - Erreur: Token invalide
+POST {{baseUrl}}/api/lobby/join
+Content-Type: {{contentType}}
+Authorization: Bearer invalid-token-12345
+
+{
+  "controller_id": "{{testControllerId}}",
+  "controller_type": "{{testControllerType}}"
+}
+
+### 2.6. Leave session (Succès)
+# Note: Remplacer <token> par le token obtenu de la requête 2.1
+POST {{baseUrl}}/api/lobby/leave
+Authorization: Bearer <token>
+
+### 2.7. Leave session - Erreur: Non authentifié
+POST {{baseUrl}}/api/lobby/leave
+
+### 2.8. Leave session - Erreur: Token invalide
+POST {{baseUrl}}/api/lobby/leave
+Authorization: Bearer invalid-token-12345
+
+# ============================================
+# 3) LOBBY - READY / NOT READY
+# ============================================
+
+### 3.1. Ready = true (Succès)
+# Note: Remplacer <token> par le token obtenu de la requête 2.1
+POST {{baseUrl}}/api/lobby/ready
+Content-Type: {{contentType}}
+Authorization: Bearer <token>
+
+{
+  "ready": true
+}
+
+### 3.2. Ready = false (Succès)
+# Note: Remplacer <token> par le token obtenu de la requête 2.1
+POST {{baseUrl}}/api/lobby/ready
+Content-Type: {{contentType}}
+Authorization: Bearer <token>
+
+{
+  "ready": false
+}
+
+### 3.3. Ready - Erreur: champ manquant
+POST {{baseUrl}}/api/lobby/ready
+Content-Type: {{contentType}}
+Authorization: Bearer <token>
+
+{
+}
+
+### 3.4. Ready - Erreur: non authentifié
+POST {{baseUrl}}/api/lobby/ready
+Content-Type: {{contentType}}
+
+{
+  "ready": true
+}
+
+### 3.5. Ready - Erreur: token invalide
+POST {{baseUrl}}/api/lobby/ready
+Content-Type: {{contentType}}
+Authorization: Bearer invalid-token-12345
+
+{
+  "ready": true
+}
+
+# ============================================
+# 4) LOBBY - RESET (CLOSE SESSION)
+# ============================================
+
+### 4.1. Reset session (Fermer session active)
+POST {{baseUrl}}/api/lobby/reset
+
+### 4.2. Reset session - Rejouer pour créer une nouvelle session
+GET {{baseUrl}}/api/lobby/session

@@ -1,0 +1,369 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:          #dce8f8;
+  --bg2:         #ccd9ef;
+  --surface:     #ffffff;
+  --surface2:    #f0f5fd;
+  --border:      rgba(100,140,210,0.2);
+  --border-strong: rgba(70,110,200,0.35);
+  --blue:        #2563eb;
+  --blue-2:      #3b82f6;
+  --blue-light:  #93c5fd;
+  --blue-pale:   #e0ecff;
+  --sky:         #0ea5e9;
+  --indigo:      #4f46e5;
+  --gold:        #d97706;
+  --rose:        #e11d48;
+  --green:       #059669;
+  --green-light: #d1fae5;
+  --text:        #0f172a;
+  --text-2:      #334155;
+  --muted:       #64748b;
+  --muted-light: #94a3b8;
+}
+
+html, body { height: 100%; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 75% -5%,  rgba(37,99,235,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 5% 100%,  rgba(14,165,233,0.10) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 40% at 100% 50%, rgba(79,70,229,0.08) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+/* ─── LAYOUT ─── */
+.ctrl-wrapper {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* ─── BRAND HEADER ─── */
+.ctrl-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #2563eb, #0ea5e9);
+  flex-shrink: 0;
+}
+
+.brand-icon {
+  width: 32px; height: 32px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+
+.brand-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #fff;
+}
+
+/* ─── MQTT INDICATOR ─── */
+.mqtt-indicator {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.7);
+}
+
+.mqtt-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  flex-shrink: 0;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.mqtt-dot.connected {
+  background: #4ade80;
+  box-shadow: 0 0 8px rgba(74,222,128,0.6);
+}
+
+.mqtt-dot.disconnected {
+  background: #f87171;
+  box-shadow: 0 0 8px rgba(248,113,113,0.6);
+}
+
+.mqtt-label {
+  letter-spacing: 0.5px;
+}
+
+/* ─── CONTROLLER PAGE ─── */
+.ctrl-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.ctrl-card {
+  background: rgba(255,255,255,0.9);
+  border: 1px solid var(--border-strong);
+  border-radius: 24px;
+  padding: 32px;
+  width: 100%;
+  max-width: 480px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(37,99,235,0.1);
+  backdrop-filter: blur(12px);
+}
+
+/* ─── AVATAR ─── */
+.ctrl-avatar-large {
+  width: 64px; height: 64px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--blue), var(--sky));
+  margin: 0 auto 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(37,99,235,0.3);
+}
+
+/* ─── PLAYER NAME ─── */
+.ctrl-player-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 2px;
+  color: var(--text);
+}
+
+/* ─── ID BADGE ─── */
+.ctrl-id-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface2);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  margin-bottom: 24px;
+}
+
+/* ─── STATUS ─── */
+.ctrl-status {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 20px;
+  padding: 6px 16px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: inline-block;
+  transition: all 0.2s;
+}
+
+.ctrl-status.is-ready {
+  background: var(--green-light);
+  border-color: rgba(5,150,105,0.3);
+  color: var(--green);
+}
+
+.ctrl-status.is-game {
+  background: var(--blue-pale);
+  border-color: rgba(37,99,235,0.25);
+  color: var(--blue);
+}
+
+/* ─── SCREEN (OLED DISPLAY) ─── */
+.ready-btn.screen {
+  width: 100%;
+  min-height: 112px;
+  padding: 14px 16px;
+  border: 2px solid #28436e;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #0c182f 0%, #0a1428 100%);
+  color: #9bf9c9;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  cursor: default;
+  margin-bottom: 24px;
+  transition: all 0.2s;
+  text-align: left;
+  user-select: none;
+  box-shadow:
+    inset 0 0 0 1px rgba(155,249,201,0.08),
+    inset 0 -10px 24px rgba(0,0,0,0.35),
+    0 8px 18px rgba(9,20,44,0.35);
+  text-shadow: 0 0 8px rgba(120,245,195,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ready-btn.screen .oled-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.oled-delta {
+  flex-shrink: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #4ade80;
+  letter-spacing: 0.5px;
+}
+
+.oled-delta:empty {
+  display: none;
+}
+
+.ready-btn.screen.is-ready {
+  border-color: #2f5f52;
+  box-shadow:
+    inset 0 0 0 1px rgba(146,255,207,0.12),
+    inset 0 -10px 24px rgba(0,0,0,0.35),
+    0 8px 18px rgba(8,34,24,0.35);
+}
+
+.ready-btn.is-hidden { display: none; }
+
+.oled-line {
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.oled-main .oled-line + .oled-line {
+  margin-top: 10px;
+}
+
+.oled-strong {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 1.1px;
+}
+
+/* ─── ANSWER BUTTONS ─── */
+.ctrl-answers-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.ctrl-answers-grid.is-hidden { display: none; }
+
+.ctrl-answer {
+  padding: 28px 16px;
+  border: none;
+  border-radius: 14px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.ctrl-answer:hover {
+  transform: scale(1.04);
+  filter: brightness(1.05);
+}
+
+.ctrl-answer:active {
+  transform: scale(0.96);
+}
+
+.ctrl-answer.ca {
+  background: #dbeafe;
+  color: #1d4ed8;
+  border: 2px solid #bfdbfe;
+}
+
+.ctrl-answer.cb {
+  background: var(--green-light);
+  color: var(--green);
+  border: 2px solid rgba(5,150,105,0.3);
+}
+
+.ctrl-answer.cc {
+  background: #fef3c7;
+  color: var(--gold);
+  border: 2px solid rgba(217,119,6,0.3);
+}
+
+.ctrl-answer.cd {
+  background: #ffe4e6;
+  color: var(--rose);
+  border: 2px solid rgba(225,29,72,0.25);
+}
+
+.ctrl-answer.active {
+  filter: brightness(1.4);
+  box-shadow: 0 0 20px rgba(37,99,235,0.4);
+}
+
+.ctrl-answers-grid.is-locked .ctrl-answer {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.ctrl-answers-grid.is-locked .ctrl-answer.is-correct {
+  opacity: 1;
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 16px rgba(5, 150, 105, 0.45);
+}
+
+/* ─── KEY LABELS ─── */
+.key-label { display: block; }
+.key-sub {
+  display: block;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+.ctrl-answers-grid.is-game .key-sub { display: none; }
+
+/* ─── HINT ─── */
+.ctrl-hint {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 16px;
+  line-height: 1.6;
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(37,99,235,0.15); border-radius: 2px; }

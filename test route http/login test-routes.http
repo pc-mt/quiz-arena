@@ -1,0 +1,212 @@
+### Variables
+@baseUrl = http://localhost:8080
+@contentType = application/json
+
+### Variables pour les tests (à modifier selon vos besoins)
+@testUsername = lunaa
+@testPassword = securePassword124
+@testRfidUid = 13:23:13:23:13:23
+
+# ============================================
+# 1) AUTHENTICATION - REGISTRATION & LOGIN
+# ============================================
+
+### 1.1. Inscription d'un nouvel utilisateur (sans RFID)
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+  "username": "{{testUsername}}",
+  "password": "{{testPassword}}"
+}
+
+### 1.2. Inscription d'un nouvel utilisateur (avec RFID)
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+  "username": "zephyrr",
+  "password": "securePassword123",
+  "rfid_uid": "A1:B2:C3:D4:E5:F6"
+}
+
+### 1.3. Inscription - Erreur: username déjà existant
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+  "username": "{{testUsername}}",
+  "password": "anotherPassword456"
+}
+
+### 1.4. Inscription - Erreur: username trop court (< 3 caractères)
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+  "username": "ab",
+  "password": "securePassword123"
+}
+
+### 1.5. Inscription - Erreur: password trop court (< 6 caractères)
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+  "username": "nova",
+  "password": "12345"
+}
+
+### 1.6. Inscription - Erreur: RFID déjà assigné à un autre compte
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+  "username": "titann",
+  "password": "securePassword123",
+  "rfid_uid": "{{testRfidUid}}"
+}
+
+### 1.7. Login - Succès
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "{{testUsername}}",
+  "password": "{{testPassword}}"
+}
+
+### 1.8. Login - Erreur: mauvais mot de passe
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "{{testUsername}}",
+  "password": "wrongPassword"
+}
+
+### 1.9. Login - Erreur: utilisateur inexistant
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "nonexistent",
+  "password": "securePassword123"
+}
+
+### 1.10. Login - Erreur: champ username manquant
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "password": "securePassword123"
+}
+
+### 1.11. Login - Erreur: champ password manquant
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "{{testUsername}}"
+}
+
+### 1.12. Login - Erreur: body vide
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{}
+
+# ============================================
+# 2) RFID MANAGEMENT
+# ============================================
+
+### 2.1. Login pour obtenir un token (pour tests RFID)
+# @name loginForRfid
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "{{testUsername}}",
+  "password": "{{testPassword}}"
+}
+
+### 2.2. PUT RFID - Ajouter/mettre à jour RFID (Succès)
+# Note: Remplacer <token> par le token obtenu de la requête 2.1
+PUT {{baseUrl}}/api/auth/rfid
+Content-Type: {{contentType}}
+Authorization: Bearer <token>
+
+{
+  "rfid_uid": "AA:BB:CC:DD:EE:FF"
+}
+
+### 2.3. PUT RFID - Erreur: RFID déjà assigné à un autre compte
+# Créer d'abord un autre utilisateur avec un RFID, puis essayer de l'assigner à cet utilisateur
+PUT {{baseUrl}}/api/auth/rfid
+Content-Type: {{contentType}}
+Authorization: Bearer <token>
+
+{
+  "rfid_uid": "{{testRfidUid}}"
+}
+
+### 2.4. PUT RFID - Erreur: Format RFID invalide (vide)
+PUT {{baseUrl}}/api/auth/rfid
+Content-Type: {{contentType}}
+Authorization: Bearer <token>
+
+{
+  "rfid_uid": ""
+}
+
+### 2.5. PUT RFID - Erreur: Format RFID invalide (format incorrect)
+PUT {{baseUrl}}/api/auth/rfid
+Content-Type: {{contentType}}
+Authorization: Bearer <token>
+
+{
+  "rfid_uid": "invalid-format-rfid"
+}
+
+### 2.6. PUT RFID - Erreur: champ rfid_uid manquant
+PUT {{baseUrl}}/api/auth/rfid
+Content-Type: {{contentType}}
+Authorization: Bearer <token>
+
+{}
+
+### 2.7. PUT RFID - Erreur: Non authentifié (pas de token)
+PUT {{baseUrl}}/api/auth/rfid
+Content-Type: {{contentType}}
+
+{
+  "rfid_uid": "AA:BB:CC:DD:EE:FF"
+}
+
+### 2.8. PUT RFID - Erreur: Token invalide
+PUT {{baseUrl}}/api/auth/rfid
+Content-Type: {{contentType}}
+Authorization: Bearer invalid-token-12345
+
+{
+  "rfid_uid": "AA:BB:CC:DD:EE:FF"
+}
+
+### 2.9. DELETE RFID - Supprimer RFID (Succès)
+# Note: Remplacer <token> par le token obtenu de la requête 2.1
+# Prérequis: L'utilisateur doit avoir un RFID assigné (utiliser 2.2 d'abord)
+DELETE {{baseUrl}}/api/auth/rfid
+Authorization: Bearer <token>
+
+### 2.10. DELETE RFID - Erreur: Pas de RFID assigné
+# Note: Remplacer <token> par le token obtenu de la requête 2.1
+# Prérequis: L'utilisateur ne doit pas avoir de RFID (utiliser 2.9 d'abord si nécessaire)
+DELETE {{baseUrl}}/api/auth/rfid
+Authorization: Bearer <token>
+
+### 2.11. DELETE RFID - Erreur: Non authentifié (pas de token)
+DELETE {{baseUrl}}/api/auth/rfid
+
+### 2.12. DELETE RFID - Erreur: Token invalide
+DELETE {{baseUrl}}/api/auth/rfid
+Authorization: Bearer invalid-token-12345

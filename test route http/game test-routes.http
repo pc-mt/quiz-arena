@@ -1,0 +1,151 @@
+### Variables
+@baseUrl = http://localhost:8080
+@contentType = application/json
+
+### Variables de test (à adapter)
+@hostUsername = lunaa
+@hostPassword = securePassword124
+@otherUsername = mtpc
+@otherPassword = mtpc2005
+
+# ============================================
+# 1) LOGIN TOKENS
+# ============================================
+
+### 1.1 Login Host
+# @name loginHost
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "{{hostUsername}}",
+  "password": "{{hostPassword}}"
+}
+
+### 1.2 Login Other User
+# @name loginOther
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "{{otherUsername}}",
+  "password": "{{otherPassword}}"
+}
+
+# ============================================
+# 2) GAME CONFIG
+# ============================================
+
+### 2.1 Success - valid config (host token required)
+POST {{baseUrl}}/api/game/config
+Content-Type: {{contentType}}
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxOSIsInVzZXJuYW1lIjoibHVuYWEiLCJpYXQiOjE3NzE4NjE2NzYsImV4cCI6MTc3MTk0ODA3Nn0.rYiB5Q2ki6OKPwOaUVj15DPQNK0JQCL8lnwDN9HKZMY
+
+{
+  "mode": "Q5",
+  "categories": [1, 2, 9],
+  "difficulties": ["EASY", "MEDIUM"]
+}
+
+### 2.2 Error - unauthorized (missing token)
+POST {{baseUrl}}/api/game/config
+Content-Type: {{contentType}}
+
+{
+  "mode": "Q5",
+  "categories": [1, 2],
+  "difficulties": ["EASY"]
+}
+
+### 2.3 Error - invalid mode
+POST {{baseUrl}}/api/game/config
+Content-Type: {{contentType}}
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxOSIsInVzZXJuYW1lIjoibHVuYWEiLCJpYXQiOjE3NzE4NjE2NzYsImV4cCI6MTc3MTk0ODA3Nn0.rYiB5Q2ki6OKPwOaUVj15DPQNK0JQCL8lnwDN9HKZMY
+
+{
+  "mode": "Q15",
+  "categories": [1, 2],
+  "difficulties": ["EASY"]
+}
+
+### 2.4 Error - empty categories
+POST {{baseUrl}}/api/game/config
+Content-Type: {{contentType}}
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxOSIsInVzZXJuYW1lIjoibHVuYWEiLCJpYXQiOjE3NzE4NjE2NzYsImV4cCI6MTc3MTk0ODA3Nn0.rYiB5Q2ki6OKPwOaUVj15DPQNK0JQCL8lnwDN9HKZMY
+
+{
+  "mode": "Q10",
+  "categories": [],
+  "difficulties": ["EASY", "MEDIUM"]
+}
+
+### 2.5 Error - invalid category id
+POST {{baseUrl}}/api/game/config
+Content-Type: {{contentType}}
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxOSIsInVzZXJuYW1lIjoibHVuYWEiLCJpYXQiOjE3NzE4NjE2NzYsImV4cCI6MTc3MTk0ODA3Nn0.rYiB5Q2ki6OKPwOaUVj15DPQNK0JQCL8lnwDN9HKZMY
+
+{
+  "mode": "Q10",
+  "categories": [1, 999999],
+  "difficulties": ["EASY", "MEDIUM"]
+}
+
+### 2.6 Error - invalid difficulties
+POST {{baseUrl}}/api/game/config
+Content-Type: {{contentType}}
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxOSIsInVzZXJuYW1lIjoibHVuYWEiLCJpYXQiOjE3NzE4NjE2NzYsImV4cCI6MTc3MTk0ODA3Nn0.rYiB5Q2ki6OKPwOaUVj15DPQNK0JQCL8lnwDN9HKZMY
+
+{
+  "mode": "Q10",
+  "categories": [1, 2],
+  "difficulties": ["BEGINNER"]
+}
+
+### 2.7 Error - not enough questions (example)
+POST {{baseUrl}}/api/game/config
+Content-Type: {{contentType}}
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxOSIsInVzZXJuYW1lIjoibHVuYWEiLCJpYXQiOjE3NzE4NjE2NzYsImV4cCI6MTc3MTk0ODA3Nn0.rYiB5Q2ki6OKPwOaUVj15DPQNK0JQCL8lnwDN9HKZMY
+
+{
+  "mode": "Q20",
+  "categories": [1],
+  "difficulties": ["HARD"]
+}
+
+### 2.8 Error - forbidden for non-host user
+POST {{baseUrl}}/api/game/config
+Content-Type: {{contentType}}
+Authorization: Bearer <other_user_token>
+
+{
+  "mode": "Q5",
+  "categories": [1, 2],
+  "difficulties": ["EASY"]
+}
+
+# ============================================
+# 3) GAME START
+# ============================================
+
+### 3.1 Success - start game (host token, after players are ready)
+POST {{baseUrl}}/api/game/start
+Authorization: Bearer <host_token>
+
+### 3.2 Error - unauthorized (missing token)
+POST {{baseUrl}}/api/game/start
+
+### 3.3 Error - forbidden for non-host
+POST {{baseUrl}}/api/game/start
+Authorization: Bearer <other_user_token>
+
+### 3.4 Error - game already running (call start twice)
+POST {{baseUrl}}/api/game/start
+Authorization: Bearer <host_token>
+
+### 3.5 Error - not all players are ready
+# Preconditions:
+# 1) Ensure at least one player in session with is_ready = false
+# 2) Session state must be LOBBY
+POST {{baseUrl}}/api/game/start
+Authorization: Bearer <host_token>
+

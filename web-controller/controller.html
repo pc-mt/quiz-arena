@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QuizArena — Web-Controller</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ── WRAPPER ── -->
+  <div class="ctrl-wrapper">
+
+    <!-- ── KOPFZEILE / MQTT STATUS ── -->
+    <div class="ctrl-brand">
+      <div class="brand-icon">🎮</div>
+      <span class="brand-name">QUIZARENA</span>
+      <div class="mqtt-indicator">
+        <span class="mqtt-dot" id="mqttDot"></span>
+        <span class="mqtt-label" id="mqttLabel">MQTT: —</span>
+      </div>
+    </div>
+
+    <!-- ── CONTROLLER-ANSICHT ── -->
+    <div class="ctrl-page">
+      <div class="ctrl-card">
+        <!-- Spieler-Identitaet -->
+        <div class="ctrl-avatar-large" id="controllerAvatar">?</div>
+        <div class="ctrl-player-name" id="controllerPlayer">—</div>
+        <div class="ctrl-id-badge">🎮 ID: <span id="controllerId">—</span></div>
+
+        <!-- Laufender Status -->
+        <div class="ctrl-status" id="controllerStatus">Verbinde...</div>
+
+        <!-- OLED-Bereich -->
+        <div class="ready-btn screen" id="readyBtn" aria-live="polite">
+          <div class="oled-main">
+            <div class="oled-line" id="oledState">STATE: LOBBY</div>
+            <div class="oled-line oled-strong" id="oledReady">WAITING</div>
+            <div class="oled-line" id="oledPoints">PTS: 0.0</div>
+          </div>
+          <div class="oled-delta" id="oledPointsGained" aria-hidden="true"></div>
+        </div>
+
+        <!-- Antworttasten -->
+        <div class="ctrl-answers-grid" id="controllerAnswers">
+          <button class="ctrl-answer ca" data-key="A">A</button>
+          <button class="ctrl-answer cb" data-key="B"><span class="key-label">B</span><span class="key-sub ready-sub">ready</span></button>
+          <button class="ctrl-answer cc" data-key="C">C</button>
+          <button class="ctrl-answer cd" data-key="D"><span class="key-label">D</span><span class="key-sub notready-sub">not ready</span></button>
+        </div>
+
+        <!-- Kurzer Bedienhinweis -->
+        <p class="ctrl-hint" id="ctrlHint">Drücke den Button um dich bereit zu machen.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── SCRIPTS ── -->
+  <script src="env.js"></script>
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <script src="controller.js"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+### Variables
+@baseUrl = http://localhost:8080
+@contentType = application/json
+
+### Variables pour les tests (à modifier selon vos besoins)
+@testControllerId = web-abc123
+@testControllerType = WEB
+@testHardwareControllerId = hw-pad-01
+
+# ============================================
+# 1) CONTROLLERS - REGISTER
+# ============================================
+
+### 1.1. Register controller (Succès - WEB)
+POST {{baseUrl}}/api/controllers/register
+Content-Type: {{contentType}}
+
+{
+  "controller_id": "{{testControllerId}}",
+  "controller_type": "{{testControllerType}}"
+}
+
+### 1.2. Register controller (Succès - HARDWARE)
+POST {{baseUrl}}/api/controllers/register
+Content-Type: {{contentType}}
+
+{
+  "controller_id": "{{testHardwareControllerId}}",
+  "controller_type": "HARDWARE"
+}
+
+### 1.3. Register controller (Succès - type par défaut WEB)
+POST {{baseUrl}}/api/controllers/register
+Content-Type: {{contentType}}
+
+{
+  "controller_id": "web-default-type"
+}
+
+### 1.4. Register controller (Succès - déjà existant, idempotent)
+POST {{baseUrl}}/api/controllers/register
+Content-Type: {{contentType}}
+
+{
+  "controller_id": "{{testControllerId}}",
+  "controller_type": "{{testControllerType}}"
+}
+
+### 1.5. Register controller - Erreur: controller_id manquant
+POST {{baseUrl}}/api/controllers/register
+Content-Type: {{contentType}}
+
+{
+  "controller_type": "WEB"
+}
+
+### 1.6. Register controller - Erreur: controller_id vide
+POST {{baseUrl}}/api/controllers/register
+Content-Type: {{contentType}}
+
+{
+  "controller_id": "",
+  "controller_type": "WEB"
+}
+
+### 1.7. Register controller - Erreur: controller_type invalide
+POST {{baseUrl}}/api/controllers/register
+Content-Type: {{contentType}}
+
+{
+  "controller_id": "web-invalid-type",
+  "controller_type": "MOBILE"
+}
+
+# ============================================
+# 2) CONTROLLERS - AVAILABLE
+# ============================================
+
+### 2.1. Lire les controllers disponibles
+GET {{baseUrl}}/api/controllers/available
+

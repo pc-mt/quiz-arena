@@ -1,0 +1,18 @@
+### Highscores Q5
+GET http://localhost:8080/api/highscores/Q5
+
+###
+
+### Highscores Q10
+GET http://localhost:8080/api/highscores/Q10
+
+###
+
+### Highscores Q20
+GET http://localhost:8080/api/highscores/Q20
+
+###
+
+### Invalid mode
+GET http://localhost:8080/api/highscores/Q15
+
